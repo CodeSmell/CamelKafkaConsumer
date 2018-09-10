@@ -27,7 +27,13 @@ public class KafkaConsumerRouteBuilder extends RouteBuilder {
                 System.out.println("Message Received:"+ exchange.getIn().getBody());
             })
             .process(exchange -> {
-                // call Appointment DAO
+                // InitialBolt: call IDoc Rest
+            })
+            .process(exchange -> {
+                // EmiBolt: Verify Enrichments
+            })
+            .process(exchange -> {
+                // AppointmentBolt: call Appointment DAO
             })
             .process(exchange -> {
                 exchange.setProperty(Exchange.FILE_NAME, UUID.randomUUID().toString() + ".txt");
