@@ -24,6 +24,3 @@ The kafka settings are stored in a config file in `src/main/resources`
 | kafka.consumer.autoOffsetReset | largest | what to do when offset missing (smallest, largest, error)
 | kafka.consumer.seekTo | beginning | moves offset to (beginning, end)
 | kafka.consumer.maxPollRecords | max records consumed in single poll 
-
-
-kafka.consumer.maxPollRecords=5000
