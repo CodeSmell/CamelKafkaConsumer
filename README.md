@@ -21,6 +21,6 @@ The kafka settings are stored in a config file in `src/main/resources`
 | kafka.topic  | TestLog  | the topic being consumed from
 | kafka.consumer.group  | kafkaGroup  | identifies consumer group
 | kafka.consumer.consumerCount  | 1  | the number of consumers connected to Kafka
-| kafka.consumer.autoOffsetReset | largest | what to do when offset missing (smallest, largest, error)
-| kafka.consumer.seekTo | beginning | moves offset to (beginning, end)
+| kafka.consumer.autoOffsetReset | latest | what to do when offset missing (latest, earliest, none)
+| kafka.consumer.seekTo | beginning | moves offset to (beginning, end), leave empty to use offset
 | kafka.consumer.maxPollRecords | 50 | max records consumed in single poll 

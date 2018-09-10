@@ -16,6 +16,8 @@ public class KafkaProperties {
     private Integer maxPollRecords;
     @Value("${kafka.consumer.consumerCount}")
     private Integer consumerCount;
+    @Value("${kafka.consumer.autoOffsetReset}")
+    private String autoOffsetReset;
 
     public String buildKafkaUrl() {
         StringBuilder sb = new StringBuilder();
@@ -24,6 +26,7 @@ public class KafkaProperties {
             .append("&groupId=").append(consumerGroupId)
             .append("&maxPollRecords=").append(maxPollRecords)
             .append("&consumersCount=").append(consumerCount)
+            .append("&autoOffsetReset=").append(autoOffsetReset)
             .append("&seekTo=").append(seekTo);
 
         return sb.toString();
