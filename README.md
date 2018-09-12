@@ -45,7 +45,8 @@ To verify how things are going for a consumer group, the following command can b
 	
 The results will look something like this:
 
-| TOPIC | PARTITION | CURRENT-OFFSET | LOG-END-OFFSET | LAG | CONSUMER-ID |   
+| TOPIC | PARTITION | CURRENT-OFFSET | LOG-END-OFFSET | LAG | CONSUMER-ID |  
+| --- | --- | --- | --- | --- | --- | --- |
 | TestLog | 0  | 92  | 97 | 5 | consumer-1-f5f51ed6-c47a-4f2e-bd62-85d623379f86 |
 
 ## Notes on achieving "at least once" semantics
