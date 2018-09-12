@@ -49,6 +49,11 @@ The results will look something like this:
 | --- | --- | --- | --- | --- | --- 
 | TestLog | 0  | 92  | 97 | 5 | consumer-1-f5f51ed6-c47a-4f2e-bd62-85d623379f86
 
+## Skipping a message on the topic
+If a message is causing a failure, the current configuration will not move past it until it is processed successfully. If a message needs to be skipped, one can manage that via the Kafka command line. The following command will set the current offset to 93. That will result in the application skipping the offending message at offset 92.
+
+    ./bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group kafkaGroup --topic TestLog --reset-offsets --to-offset 93 --execute
+
 ## Notes on achieving "at least once" semantics
 Prior to Camel 2.21, the capability to manually commit the offset did not exist. It also seems to have had some initial issues so using versions greater than 2.22.0 is recommended.
 
