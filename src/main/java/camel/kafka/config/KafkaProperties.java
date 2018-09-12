@@ -18,6 +18,12 @@ public class KafkaProperties {
     private Integer consumerCount;
     @Value("${kafka.consumer.autoOffsetReset}")
     private String autoOffsetReset;
+    @Value("${kafka.consumer.autoCommitEnable}")
+    private Boolean autoCommitEnable;
+    @Value("${kafka.consumer.allowManualCommit}")
+    private Boolean allowManualCommit;
+    @Value("${kafka.consumer.breakOnFirstError}")
+    private Boolean breakOnFirstError;
 
     public String buildKafkaUrl() {
         StringBuilder sb = new StringBuilder();
@@ -27,6 +33,9 @@ public class KafkaProperties {
             .append("&maxPollRecords=").append(maxPollRecords)
             .append("&consumersCount=").append(consumerCount)
             .append("&autoOffsetReset=").append(autoOffsetReset)
+            .append("&autoCommitEnable=").append(autoCommitEnable)
+            .append("&allowManualCommit=").append(allowManualCommit)
+            .append("&breakOnFirstError=").append(breakOnFirstError)
             .append("&seekTo=").append(seekTo);
 
         return sb.toString();

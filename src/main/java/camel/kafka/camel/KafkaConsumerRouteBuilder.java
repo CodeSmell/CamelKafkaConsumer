@@ -2,7 +2,10 @@ package camel.kafka.camel;
 
 import camel.kafka.config.KafkaProperties;
 import org.apache.camel.Exchange;
+import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.kafka.KafkaConstants;
+import org.apache.camel.component.kafka.KafkaManualCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,24 +24,64 @@ public class KafkaConsumerRouteBuilder extends RouteBuilder {
         String kafkaUrl = kafkaProps.buildKafkaUrl();
         LOGGER.info("building camel route to consume from kafka: {}", kafkaUrl);
 
+        onException(Exception.class)
+            .handled(false)
+            .log(LoggingLevel.WARN, "${exception.message}");
+
         from(kafkaUrl)
             .routeId("consumeFromKafka")
             .process(exchange -> {
-                System.out.println("Message Received:"+ exchange.getIn().getBody());
+                LOGGER.info(this.dumpKafkaDetails(exchange));
             })
             .process(exchange -> {
-                // InitialBolt: call IDoc Rest
+                // do something interesting
             })
             .process(exchange -> {
-                // EmiBolt: Verify Enrichments
+                // simple approach to generating errors
+                String body = exchange.getIn().getBody(String.class);
+                if (body.startsWith("error")) {
+                    throw new RuntimeException("can't handle the message");
+                }
             })
             .process(exchange -> {
-                // AppointmentBolt: call Appointment DAO
+                // do something interesting
             })
             .process(exchange -> {
                 exchange.setProperty(Exchange.FILE_NAME, UUID.randomUUID().toString() + ".txt");
             })
-            .to("file:///Volumes/dev/CamelKafkaConsumer/files");
+            .to("file:///Volumes/dev/CamelKafkaConsumer/files")
+            .process(exchange -> {
+                // manually commit offset if last in batch
+                Boolean lastOne = exchange.getIn().getHeader(KafkaConstants.LAST_RECORD_BEFORE_COMMIT, Boolean.class);
+
+                if (lastOne) {
+                    KafkaManualCommit manual =
+                            exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
+                    if (manual != null) {
+                        LOGGER.info("manually committing the offset for batch");
+                        manual.commitSync();
+                    }
+                } else {
+                    LOGGER.info("NOT time to commit the offset yet");
+                }
+            });
+    }
+
+    private String dumpKafkaDetails(Exchange exchange) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Message Received from topic:").append(exchange.getIn().getHeader(KafkaConstants.TOPIC));
+        sb.append("\r\n");
+        sb.append("Message Received from partition:").append(exchange.getIn().getHeader(KafkaConstants.PARTITION));
+        sb.append(" with partition key:").append(exchange.getIn().getHeader(KafkaConstants.PARTITION_KEY));
+        sb.append("\r\n");
+        sb.append("Message offset:").append(exchange.getIn().getHeader(KafkaConstants.OFFSET));
+        sb.append("\r\n");
+        sb.append("Message last record:").append(exchange.getIn().getHeader(KafkaConstants.LAST_RECORD_BEFORE_COMMIT));
+        sb.append("\r\n");
+        sb.append("Message Received:").append(exchange.getIn().getBody());
+        sb.append("\r\n");
+
+        return sb.toString();
     }
 
 }
