@@ -45,8 +45,8 @@ To verify how things are going for a consumer group, the following command can b
 	
 The results will look something like this:
 
-| TOPIC | PARTITION | CURRENT-OFFSET | LOG-END-OFFSET |LAG |CONSUMER-ID                                       
-|TestLog | 0  |92  |97 | 5 |consumer-1-f5f51ed6-c47a-4f2e-bd62-85d623379f86
+| TOPIC | PARTITION | CURRENT-OFFSET | LOG-END-OFFSET | LAG | CONSUMER-ID |   
+| TestLog | 0  | 92  | 97 | 5 | consumer-1-f5f51ed6-c47a-4f2e-bd62-85d623379f86 |
 
 ## Notes on achieving "at least once" semantics
 Prior to Camel 2.21, the capability to manually commit the offset did not exist. It also seems to have had some initial issues so using versions greater than 2.22.0 is recommended.
