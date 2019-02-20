@@ -13,7 +13,7 @@
     <tomcat.version>7.0.55</tomcat.version>
 
     <!-- Spring -->
-    <spring.version>4.3.5.RELEASE</spring.version>
+    <spring.version>4.3.22.RELEASE</spring.version>
 
     <!-- Camel -->
     <camel.version>2.22.1</camel.version>
