@@ -14,7 +14,7 @@ Build the application and install the WAR in local maven repository
 	
 Run the application on Tomcat
 
-	mvn tomcat7:run
+	mvn tomcat7:run -Dmaven.tomcat.port=8083
 
 ## Starting Kafka
 Before starting the application, one should start Zookeeper and Kafka.

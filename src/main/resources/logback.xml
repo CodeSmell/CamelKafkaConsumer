@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true" scanPeriod="60 seconds">
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
+    <encoder>
+      <!-- 
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+      -->
+      <pattern>%d{yyyy-MM-dd} | %d{HH:mm:ss.SSS} | %-20.20thread | %5p | %-25.25logger{25} | %12(ID: %8mdc{id}) | %m%n
+      </pattern>
+    </encoder>
+  </appender>
+
+  <!-- limit level of logging -->
+  <logger name="org.apache.camel.component.log" level="WARN" />
+  <logger name="org.apache.camel" level="WARN" />
+  <logger name="org.apache.http" level="WARN" />
+  <logger name="org.apache.kafka" level="WARN" />
+  <logger name="org.springframework" level="WARN" />
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+  </root>
+</configuration>
