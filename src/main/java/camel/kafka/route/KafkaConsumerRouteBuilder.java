@@ -59,6 +59,9 @@ public class KafkaConsumerRouteBuilder extends RouteBuilder {
             .process(exchange -> {
                 exchange.setProperty(Exchange.FILE_NAME, UUID.randomUUID().toString() + ".txt");
             })
+            .process(exchange -> {
+                LOGGER.info("message is now> {}", exchange.getIn().getBody(String.class));
+            })
             .to(OUTGOING_ENDPOINT)
             .process(exchange -> {
                 // manually commit offset if last in batch
