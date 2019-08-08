@@ -16,7 +16,7 @@
     <spring.version>4.3.22.RELEASE</spring.version>
 
     <!-- Camel -->
-    <camel.version>2.22.1</camel.version>
+    <camel.version>2.24.0</camel.version>
 
     <!-- logging -->
     <slf4j.version>1.7.13</slf4j.version>
