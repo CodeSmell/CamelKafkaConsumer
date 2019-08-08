@@ -1,6 +1,7 @@
-package camel.kafka.camel;
+package camel.kafka.route;
 
 import camel.kafka.config.KafkaProperties;
+import camel.kafka.service.FooBar;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
@@ -15,8 +16,14 @@ import java.util.UUID;
 public class KafkaConsumerRouteBuilder extends RouteBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaConsumerRouteBuilder.class);
 
+    public static final String ROUTE_ID = "consumeFromKafka";
+    public static final String OUTGOING_ENDPOINT = "file:///Volumes/dev/CamelKafkaConsumer/files";
+    
     @Autowired
     KafkaProperties kafkaProps;
+    
+    @Autowired
+    FooBar fooBarService;
 
     @Override
     public void configure() throws Exception {
@@ -29,7 +36,7 @@ public class KafkaConsumerRouteBuilder extends RouteBuilder {
             .log(LoggingLevel.WARN, "${exception.message}");
 
         from(kafkaUrl)
-            .routeId("consumeFromKafka")
+            .routeId(ROUTE_ID)
             .process(exchange -> {
                 LOGGER.info(this.dumpKafkaDetails(exchange));
             })
@@ -45,16 +52,19 @@ public class KafkaConsumerRouteBuilder extends RouteBuilder {
             })
             .process(exchange -> {
                 // do something interesting
+                String in = exchange.getIn().getBody(String.class);
+                String out = fooBarService.process(in);
+                exchange.getIn().setBody(out);
             })
             .process(exchange -> {
                 exchange.setProperty(Exchange.FILE_NAME, UUID.randomUUID().toString() + ".txt");
             })
-            .to("file:///Volumes/dev/CamelKafkaConsumer/files")
+            .to(OUTGOING_ENDPOINT)
             .process(exchange -> {
                 // manually commit offset if last in batch
                 Boolean lastOne = exchange.getIn().getHeader(KafkaConstants.LAST_RECORD_BEFORE_COMMIT, Boolean.class);
 
-                if (lastOne) {
+                if (lastOne != null && lastOne) {
                     KafkaManualCommit manual =
                             exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
                     if (manual != null) {

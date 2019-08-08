@@ -1,9 +1,10 @@
 package camel.kafka.config;
 
-import camel.kafka.camel.KafkaConsumerRouteBuilder;
+import camel.kafka.route.KafkaConsumerRouteBuilder;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.spring.javaconfig.CamelConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 

@@ -24,11 +24,15 @@ public class KafkaProperties {
     private Boolean allowManualCommit;
     @Value("${kafka.consumer.breakOnFirstError}")
     private Boolean breakOnFirstError;
+    @Value("${kafka.endpointPrefix}")
+    private String endPointPrefix;
 
     public String buildKafkaUrl() {
         StringBuilder sb = new StringBuilder();
-        sb.append("kafka:").append(topic)
-            .append("?brokers=").append(hostWithPort)
+        sb.append(endPointPrefix).append(topic);
+        
+        if ("kafka:".equalsIgnoreCase(endPointPrefix)) {
+            sb.append("?brokers=").append(hostWithPort)
             .append("&groupId=").append(consumerGroupId)
             .append("&maxPollRecords=").append(maxPollRecords)
             .append("&consumersCount=").append(consumerCount)
@@ -37,7 +41,8 @@ public class KafkaProperties {
             .append("&allowManualCommit=").append(allowManualCommit)
             .append("&breakOnFirstError=").append(breakOnFirstError)
             .append("&seekTo=").append(seekTo);
-
+        }
+        
         return sb.toString();
     }
 

@@ -21,6 +21,23 @@ Before starting the application, one should start Zookeeper and Kafka.
 There is a start up script that can be run from the Kafka main directory.
 
 	./startKafkaScript.sh
+	
+If you installed Kafka using HomeBrew the following commands can be used
+	
+	brew services start zookeeper
+	brew services start kafka
+	
+## Creating a Kafka topic
+Create a Kafka topic 
+
+	bin/kafka-topics.sh --create 
+		--replication-factor 1 --partitions 13 
+		--topic TestLog 
+		--zookeeper localhost:2181
+		
+Verify that the topic is created
+
+	 bin/kafka-topics.sh --list --zookeeper localhost:2181
 
 ## Starting Kafka Producer script
 The easiest way to test the application is to use the Kafka producer script:
@@ -37,6 +54,11 @@ This allows simple messages to be published to a Kafka topic, in this case the m
 	>foobar
 	>test me
 	>error 123
+	
+If you want to pass a key on the message start the producer as follows:
+
+	bin/kafka-console-producer.sh --broker-list localhost:9092 --topic TestLog 
+		--property "parse.key=true" --property "key.separator=:"
 
 ## Checking on the Consumer Group
 To verify how things are going for a consumer group, the following command can be run:
