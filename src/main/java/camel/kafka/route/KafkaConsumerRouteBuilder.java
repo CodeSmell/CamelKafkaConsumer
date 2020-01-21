@@ -4,6 +4,7 @@ import camel.kafka.config.KafkaProperties;
 import camel.kafka.service.FooBar;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaConstants;
 import org.apache.camel.component.kafka.KafkaManualCommit;
@@ -18,6 +19,9 @@ public class KafkaConsumerRouteBuilder extends RouteBuilder {
 
     public static final String ROUTE_ID = "consumeFromKafka";
     public static final String OUTGOING_ENDPOINT = "file:///Volumes/dev/CamelKafkaConsumer/files";
+    
+    @Autowired
+    private Processor kafkaOffsetManagerProcessor;
     
     @Autowired
     KafkaProperties kafkaProps;
@@ -63,21 +67,23 @@ public class KafkaConsumerRouteBuilder extends RouteBuilder {
                 LOGGER.info("message is now> {}", exchange.getIn().getBody(String.class));
             })
             .to(OUTGOING_ENDPOINT)
-            .process(exchange -> {
-                // manually commit offset if last in batch
-                Boolean lastOne = exchange.getIn().getHeader(KafkaConstants.LAST_RECORD_BEFORE_COMMIT, Boolean.class);
-
-                if (lastOne != null && lastOne) {
-                    KafkaManualCommit manual =
-                            exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
-                    if (manual != null) {
-                        LOGGER.info("manually committing the offset for batch");
-                        manual.commitSync();
-                    }
-                } else {
-                    LOGGER.info("NOT time to commit the offset yet");
-                }
-            });
+            .process(kafkaOffsetManagerProcessor)
+//            .process(exchange -> {
+//                // manually commit offset if last in batch
+//                Boolean lastOne = exchange.getIn().getHeader(KafkaConstants.LAST_RECORD_BEFORE_COMMIT, Boolean.class);
+//
+//                if (lastOne != null && lastOne) {
+//                    KafkaManualCommit manual =
+//                            exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
+//                    if (manual != null) {
+//                        LOGGER.info("manually committing the offset for batch");
+//                        manual.commitSync();
+//                    }
+//                } else {
+//                    LOGGER.info("NOT time to commit the offset yet");
+//                }
+//            })
+            .log("end");
     }
 
     private String dumpKafkaDetails(Exchange exchange) {

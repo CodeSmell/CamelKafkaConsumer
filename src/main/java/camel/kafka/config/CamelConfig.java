@@ -1,10 +1,11 @@
 package camel.kafka.config;
 
 import camel.kafka.route.KafkaConsumerRouteBuilder;
+import camel.kafka.route.KafkaOffsetManagerProcessor;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.spring.javaconfig.CamelConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -37,5 +38,10 @@ public class CamelConfig extends CamelConfiguration {
     @Bean
     public KafkaProperties kafkaProps() {
         return new KafkaProperties();
+    }
+    
+    @Bean
+    public Processor buildKafkaOffsetManager() {
+        return new KafkaOffsetManagerProcessor();
     }
 }
