@@ -7,7 +7,6 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.kafka.KafkaConstants;
-import org.apache.camel.component.kafka.KafkaManualCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,21 +67,6 @@ public class KafkaConsumerRouteBuilder extends RouteBuilder {
             })
             .to(OUTGOING_ENDPOINT)
             .process(kafkaOffsetManagerProcessor)
-//            .process(exchange -> {
-//                // manually commit offset if last in batch
-//                Boolean lastOne = exchange.getIn().getHeader(KafkaConstants.LAST_RECORD_BEFORE_COMMIT, Boolean.class);
-//
-//                if (lastOne != null && lastOne) {
-//                    KafkaManualCommit manual =
-//                            exchange.getIn().getHeader(KafkaConstants.MANUAL_COMMIT, KafkaManualCommit.class);
-//                    if (manual != null) {
-//                        LOGGER.info("manually committing the offset for batch");
-//                        manual.commitSync();
-//                    }
-//                } else {
-//                    LOGGER.info("NOT time to commit the offset yet");
-//                }
-//            })
             .log("end");
     }
 
