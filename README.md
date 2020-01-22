@@ -76,13 +76,38 @@ If a message is causing a failure, the current configuration will not move past 
 
     ./bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --group kafkaGroup --topic TestLog --reset-offsets --to-offset 93 --execute
 
+## At Most Once semantics is the default in Camel
+There are two ways a consumer can set up messaging semantics:
+* at most once
+* at least once
+
+With the following settings Camel will follow the "at most once" semantics.
+
+* `autoCommitEnable` = true
+* `autoCommitIntervalMs` = some small number (default is currently 5000)
+
+After consuming one or more messages from a topic (via the KafkaConsumer `poll()` method), the Camel route will start to process them. However, when the time specified by the `autoCommitIntervalMs` has elapsed, Camel will automatically attempt to commit the latest offset from the last poll cycle. The committing of the offset would occur even if the messages were still being processed on the Camel route. If an error occurred (ie. the consumer crashed) before the processing of these messages completed they could be "lost". When the next poll cycle occurs, the offset would have moved forward and these messages would not be seen again. 
+
+Note: it is possible w/ a high interval setting that messages could be processed successfully and the offset not be committed. If an error occurred at this stage the messages would be reprocessed again (similar to "at least once" semantics).
+
 ## Notes on achieving "at least once" semantics
+To avoid "losing" messages a Camel route should be setup so that messages are processed using "at least once" semantics. 
+
+In the [Apache Kafka Consumer JavaDoc](https://kafka.apache.org/22/javadoc/org/apache/kafka/clients/consumer/KafkaConsumer.html):
+	
+	Kafka provides what is often called "at-least-once" delivery guarantees, as each record will likely be delivered one time but in failure cases could be duplicated.
+	
+The duplication (or re-processing) of messages occurs when a message has been consumed and processed successfully but an error occurs before the offset can be committed. 
+
+To setup "at least once" semantics in Camel we will need to handle offset commits manually. When setup it can cause Camel to re-consume and re-process a message when there is an issue and the offset has not changed. Of course when this occurs no other messages in the partition will be able to be processed (or seen) until the application can successfully process the message or move the offset. In the case of a failing service, this is probably the desired result until the service is back up.
+
+### manual commits in Camel
 Prior to Camel 2.21, the capability to manually commit the offset did not exist. It also seems to have had some initial issues so using versions greater than 2.22.0 is recommended.
 
 * [CAMEL-11933](https://issues.apache.org/jira/browse/CAMEL-11933)
 * [CAMEL-12525](https://issues.apache.org/jira/browse/CAMEL-12525)  
 
-An "at least once" semantics when setup will cause Camel to re-consume and re-process a message when there is an issue. Of course the result of this approach is that no other messages in the partition will be able to be processed (or seen) until the application can successfully process the message. In the case of a failing service, this is probably the desired result until the service is back up.
+### basic configuration settings
   
 The kafka settings are stored in a config file in `src/main/resources`
 
@@ -96,6 +121,6 @@ The kafka settings are stored in a config file in `src/main/resources`
 | kafka.consumer.allowManualCommit | true | turn on/off manual commits via KafkaManualCommit. This needs to be set to true so we can perform manual commits, giving us access to the KafkaManualCommit capability.
 | kafka.consumer.autoOffsetReset | earliest | what to do when offset missing (latest, earliest, none). Using earliest will cause the consumer to read from the current offset when there is a difference between the current offset and the offset marking the end of the partition.
 | kafka.consumer.seekTo |  | moves offset to (beginning, end), leave empty to use offset
-| kafka.consumer.breakOnFirstError | true | turn on/off whether Camel stops when it encounters an error. When this is true, the route will stop processing the rest of the messages in the batch received on last poll of the topic. If this is false, the route will process all of the messages in the batch. If the last message is successful, the offset would be committed and the other messages would not be re-processed even if there was an error. 
+| kafka.consumer.breakOnFirstError | true | turn on/off whether Camel route will stop processing a batch of messages when it encounters an error. When this is true, the route will stop processing the rest of the messages in the batch received on last poll of the topic. If this is false, the route will process all of the messages in the batch. If the last message is successful, the offset would be committed and the other messages would not be re-processed even if there was an error. 
 | kafka.consumer.maxPollRecords | 3 | max records consumed in single poll. It is probably a good idea to keep this set to a low number, since issues w/ a message in the batch would cause all of the messages in the batch to be re-processed.
 
