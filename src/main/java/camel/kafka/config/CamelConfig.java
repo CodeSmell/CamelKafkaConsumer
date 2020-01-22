@@ -40,7 +40,7 @@ public class CamelConfig extends CamelConfiguration {
         return new KafkaProperties();
     }
     
-    @Bean
+    @Bean("kafkaOffsetManager")
     public Processor buildKafkaOffsetManager() {
         return new KafkaOffsetManagerProcessor();
     }

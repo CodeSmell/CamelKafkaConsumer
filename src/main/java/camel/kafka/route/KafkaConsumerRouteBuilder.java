@@ -10,6 +10,7 @@ import org.apache.camel.component.kafka.KafkaConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ public class KafkaConsumerRouteBuilder extends RouteBuilder {
     public static final String OUTGOING_ENDPOINT = "file:///Volumes/dev/CamelKafkaConsumer/files";
     
     @Autowired
+    @Qualifier("kafkaOffsetManager")
     private Processor kafkaOffsetManagerProcessor;
     
     @Autowired
