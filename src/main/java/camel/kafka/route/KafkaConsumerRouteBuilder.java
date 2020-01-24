@@ -25,19 +25,24 @@ public class KafkaConsumerRouteBuilder extends RouteBuilder {
     private Processor kafkaOffsetManagerProcessor;
     
     @Autowired
-    KafkaProperties kafkaProps;
+    @Qualifier("evaluateException")
+    Processor evaluateExceptionProcessor;
     
     @Autowired
-    FooBar fooBarService;
+    private KafkaProperties kafkaProps;
+    
+    @Autowired
+    private FooBar fooBarService;
 
     @Override
     public void configure() throws Exception {
-
+        
         String kafkaUrl = kafkaProps.buildKafkaUrl();
         LOGGER.info("building camel route to consume from kafka: {}", kafkaUrl);
 
         onException(Exception.class)
             .handled(false)
+            .process(evaluateExceptionProcessor)
             .log(LoggingLevel.WARN, "${exception.message}");
 
         from(kafkaUrl)

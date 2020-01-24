@@ -13,11 +13,13 @@
   </appender>
 
   <!-- limit level of logging -->
+  <logger name="org.springframework" level="WARN" />
   <logger name="org.apache.camel.component.log" level="WARN" />
   <logger name="org.apache.camel" level="WARN" />
   <logger name="org.apache.http" level="WARN" />
   <logger name="org.apache.kafka" level="WARN" />
-  <logger name="org.springframework" level="WARN" />
+  <logger name="org.apache.zookeeper" level="WARN" />
+  <logger name="kafka" level="WARN" />
 
   <root level="INFO">
     <appender-ref ref="STDOUT" />
