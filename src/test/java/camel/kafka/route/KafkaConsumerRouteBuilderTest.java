@@ -1,8 +1,8 @@
 package camel.kafka.route;
 
-import camel.kafka.config.CamelConfig;
+import camel.kafka.config.CamelRoutesConfig;
 import camel.kafka.config.KafkaProperties;
-import camel.kafka.config.MockApplicationConfig;
+import camel.kafka.mock.config.MockApplicationConfig;
 import camel.kafka.service.FooBar;
 import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
@@ -20,7 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { MockApplicationConfig.class, CamelConfig.class })
+@ContextConfiguration(classes = { MockApplicationConfig.class, CamelRoutesConfig.class })
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 public class KafkaConsumerRouteBuilderTest extends CamelTestSupport {
 
